@@ -1,0 +1,13 @@
+<div class="photobooth">
+  <div class="controls">
+    <button #btnPhoto mat-flat-button color="primary">
+      Take Photo
+    </button>
+  </div>
+  <canvas class="photo" #photo></canvas>
+  <video class="player" #video></video>
+  @let photoStripe = photoStripe$ | async;
+  <a *ngFor="let photo of photoStripe; index as i" [href]="photo.data" download="{{ photo.download }}{{ i + 1 }}">
+    <img [src]="photo.data" [alt]="photo.description" height="100px" width="100px"/>
+  </a>
+</div>

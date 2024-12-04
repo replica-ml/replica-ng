@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+.photobooth {
+  background: white;
+  max-width: 150rem;
+  margin: 2rem auto;
+  border-radius: 2px;
+}
+
+/*clearfix*/
+.photobooth:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.photo {
+  max-width: 100%;
+  width: 500px;
+  height: auto;
+  float: left;
+}
+
+.player {
+  display: none;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 200px;
+}

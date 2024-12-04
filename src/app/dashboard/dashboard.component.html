@@ -1,0 +1,7 @@
+<div class="grid-container">
+  @if (authService.loggedIn()) {
+    <button mat-flat-button color="primary" routerLink="/secret-dashboard">Start wizard</button>
+  } @else {
+    <button mat-flat-button color="primary" routerLink="/auth">Auth</button>
+  }
+</div>

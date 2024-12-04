@@ -1,0 +1,37 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #sidenav
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    class="sidenav"
+    fixedInViewport="true"
+  > <!-- [opened]="(opened | async)" -->
+    <mat-toolbar color="primary" style="padding-left: 0 !important">
+      <app-server-status></app-server-status>
+    </mat-toolbar>
+    <mat-nav-list>
+      @if (loggedIn()) {
+        @if (hasRole('admin')) {
+          <a mat-list-item routerLink="/admin">Admin</a>
+        }
+        <a mat-list-item routerLink="/secret-dashboard">Secret dashboard</a>
+        <a mat-list-item routerLink="/auth/logout">Logout</a>
+      } @else {
+        <a mat-list-item routerLink="/auth">Auth</a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button
+        (click)="toggle()"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        type="button">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <a routerLink="/">replica-ng</a>
+    </mat-toolbar>
+    <!-- Add Content Here -->
+  </mat-sidenav-content>
+</mat-sidenav-container>
