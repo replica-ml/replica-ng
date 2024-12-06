@@ -1,3 +1,24 @@
+@if (showStartupButton) {
+  <button mat-button (click)="startupButtonOnClick()">
+    Start webcam capture
+  </button>
+}
+
+<div class="camera" [ngStyle]="showStartupButton? {display: 'none'} : {}">
+  <video id="video" #video>
+    Video stream not available.
+  </video>
+  <button id="start-button" #startButton>
+    Take photo
+  </button>
+</div>
+
+<canvas id="canvas" #canvas></canvas>
+<div class="output" [ngStyle]="showStartupButton? {display: 'none'} : {}">
+  <img id="photo" #photo alt="The screen capture will appear in this box."/>
+</div>
+
+<!--
 <div class="photobooth">
   <div class="controls">
     <button #btnPhoto mat-flat-button color="primary">
@@ -11,3 +32,4 @@
     <img [src]="photo.data" [alt]="photo.description" height="100px" width="100px"/>
   </a>
 </div>
+-->

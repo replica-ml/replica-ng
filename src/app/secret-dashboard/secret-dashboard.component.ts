@@ -6,6 +6,7 @@ import { catchError } from "rxjs/operators";
 
 import { IScraperGetBodyResponse, ScrapeService } from "../api/scrape/scrape.service";
 import { SecretService } from "./secret-service.service";
+import { DataUrlService } from "../data-url.service";
 
 
 @Component({
@@ -19,11 +20,12 @@ export class SecretDashboardComponent implements OnInit {
   secretError$: Observable<any> = new Observable();
 
   scraped$!: Observable<IScraperGetBodyResponse>;
-  showPhotoStep = false;
-  showLookStep = false;
+  showPhotoStep = true;
+  showLookStep = true;
 
   constructor(private secretService: SecretService,
-              private scrapeService: ScrapeService) {}
+              private scrapeService: ScrapeService,
+              protected dataUrlService: DataUrlService) {}
 
   ngOnInit(): void {
     this.secret$ = this.secretService.get();
@@ -63,5 +65,10 @@ export class SecretDashboardComponent implements OnInit {
       console.info("scraping:", r);
     })
     */
+  }
+
+  setProfileUrl(ogImage: string): string {
+    this.dataUrlService.modelPhotoUrl$.next(ogImage);
+    return ogImage;
   }
 }
