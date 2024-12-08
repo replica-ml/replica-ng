@@ -4,9 +4,12 @@ import { FormControl, Validators } from "@angular/forms";
 import { lastValueFrom, Observable, of } from "rxjs";
 import { catchError } from "rxjs/operators";
 
-import { IScraperGetBodyResponse, ScrapeService } from "../api/scrape/scrape.service";
-import { SecretService } from "./secret-service.service";
+import { ScrapeService } from "../api/scrape/scrape.service";
+import { IScraperGetBodyResponse } from "../api/scrape/scrape.interfaces";
+import { ISwapPostResponse } from "../api/swap/swap.interfaces";
+import { SwapService } from "../api/swap/swap.service";
 import { DataUrlService } from "../data-url.service";
+import { SecretService } from "./secret-service.service";
 
 
 @Component({
@@ -23,8 +26,11 @@ export class SecretDashboardComponent implements OnInit {
   showPhotoStep = true;
   showLookStep = true;
 
+  swap$!: Observable<ISwapPostResponse>;
+
   constructor(private secretService: SecretService,
               private scrapeService: ScrapeService,
+              private swapService: SwapService,
               protected dataUrlService: DataUrlService) {}
 
   ngOnInit(): void {
@@ -70,5 +76,11 @@ export class SecretDashboardComponent implements OnInit {
   setProfileUrl(ogImage: string): string {
     this.dataUrlService.modelPhotoUrl$.next(ogImage);
     return ogImage;
+  }
+
+  swap(userPhotoUrl: string | null, modelPhotoUrl: string | null) {
+    if (userPhotoUrl == null || modelPhotoUrl == null) return;
+    this.swap$ = this.swapService
+      .post({user_img_url: userPhotoUrl, model_img_url: modelPhotoUrl});
   }
 }

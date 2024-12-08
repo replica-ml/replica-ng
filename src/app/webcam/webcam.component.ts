@@ -5,7 +5,9 @@ import {
   ElementRef,
   ViewChild
 } from '@angular/core';
+
 import { DataUrlService } from "../data-url.service";
+
 
 @Component({
   selector: 'app-webcam',
