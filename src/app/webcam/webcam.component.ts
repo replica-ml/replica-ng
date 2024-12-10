@@ -3,6 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  EventEmitter,
+  OnDestroy,
+  Output,
   ViewChild
 } from '@angular/core';
 
@@ -16,9 +19,13 @@ import { DataUrlService } from "../data-url.service";
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false
 })
-export class WebcamComponent implements AfterContentInit {
+export class WebcamComponent implements AfterContentInit, OnDestroy {
+  private activeWebcam: boolean = false;
+
   constructor(private dataUrlService: DataUrlService) {
   }
+
+  showStartupButton = true
 
   width = 320; // We will scale the photo width to this
   height = 0; // This will be computed based on the input stream
@@ -31,16 +38,16 @@ export class WebcamComponent implements AfterContentInit {
   // The various HTML elements we need to configure or control. These
   // will be set by the startup() function.
 
-  @ViewChild('video', { static: true, read: ElementRef })
+  @ViewChild('video', {static: true, read: ElementRef})
   video!: ElementRef<HTMLVideoElement>;
 
-  @ViewChild('canvas', { static: true, read: ElementRef })
+  @ViewChild('canvas', {static: true, read: ElementRef})
   canvas!: ElementRef<HTMLCanvasElement>;
 
-  @ViewChild('photo', { static: true, read: ElementRef })
+  @ViewChild('photo', {static: true, read: ElementRef})
   photo!: ElementRef<HTMLImageElement>;
 
-  @ViewChild('startButton', { static: true, read: ElementRef })
+  @ViewChild('startButton', {static: true, read: ElementRef})
   startButton!: ElementRef<HTMLButtonElement>;
 
   showViewLiveResultButton() {
@@ -59,12 +66,10 @@ export class WebcamComponent implements AfterContentInit {
   }
 
   startup() {
-    if (this.showViewLiveResultButton()) {
-      return;
-    }
+    if (this.showViewLiveResultButton()) return;
 
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({video: true, audio: false})
       .then((stream) => {
         this.video.nativeElement.srcObject = stream;
         this.video.nativeElement.play().catch(console.error);
@@ -100,7 +105,8 @@ export class WebcamComponent implements AfterContentInit {
     this.startButton.nativeElement.addEventListener(
       "click",
       (ev) => {
-        this.takePicture();
+        if (this.activeWebcam) this.takePicture();
+        else this.startupButtonOnClick();
         ev.preventDefault();
       },
       false,
@@ -139,6 +145,7 @@ export class WebcamComponent implements AfterContentInit {
       const data = this.canvas.nativeElement.toDataURL("image/png");
       this.dataUrlService.userPhotoUrl$.next(data);
       this.photo.nativeElement.setAttribute("src", data);
+      this.destroy();
     } else {
       this.clearPhoto();
     }
@@ -146,14 +153,37 @@ export class WebcamComponent implements AfterContentInit {
 
   // Set up our event listener to run the startup process
   // once loading is complete.
+  @Output() stopMedia = new EventEmitter<boolean>();
+
   ngAfterContentInit() {
     //this.startup();
   }
+
   startupButtonOnClick() {
+    this.activeWebcam = true;
     this.showStartupButton = false;
-    this.startup();
+    this.startup()
+    this.stopMedia.subscribe(stop => {
+      console.info(stop, " this.stopMedia")
+      if (stop) this.destroy();
+    });
   }
-  showStartupButton = true
+
+  ngOnDestroy() {
+    console.info("destroyed")
+    this.destroy();
+  }
+
+  destroy() {
+    this.activeWebcam = false;
+    const srcObject = this.video.nativeElement.srcObject;
+    if (srcObject == null) return;
+    else if ("getTracks" in srcObject) {
+      srcObject.getTracks().forEach((track) =>
+        track.stop()
+      );
+    }
+  }
 }
 
 /*

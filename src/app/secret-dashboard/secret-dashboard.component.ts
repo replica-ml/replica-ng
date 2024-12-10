@@ -27,6 +27,7 @@ export class SecretDashboardComponent implements OnInit {
   showLookStep = true;
 
   swap$!: Observable<ISwapPostResponse>;
+  private url: string | null = null;
 
   constructor(private secretService: SecretService,
               private scrapeService: ScrapeService,
@@ -46,10 +47,10 @@ export class SecretDashboardComponent implements OnInit {
   }*/
 
   scrape() {
-    const url = this.scrapeControl.value;
-    if (url != null) {
+    this.url = this.scrapeControl.value;
+    if (this.url != null) {
       lastValueFrom(this.scrapeService
-        .post({url}))
+        .post({url: this.url}))
         .then(scraped => {
           this.scraped$ = this.scrapeService
             .get(scraped.id);
@@ -82,5 +83,10 @@ export class SecretDashboardComponent implements OnInit {
     if (userPhotoUrl == null || modelPhotoUrl == null) return;
     this.swap$ = this.swapService
       .post({user_img_url: userPhotoUrl, model_img_url: modelPhotoUrl});
+  }
+
+  fixMarkdownUrls(markdown: string): string {
+    const { origin } = new URL(this.url as string);
+    return markdown.replaceAll("](/", `](${origin}/`);
   }
 }

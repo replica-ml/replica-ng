@@ -8,7 +8,7 @@ import { ISwapPostRequest, ISwapPostResponse } from "./swap.interfaces";
 
 @Injectable()
 export class SwapService {
-  swapCache: Map<string/*scrape url*/, string/*result url*/> = new Map<string, string>();
+  swapCache: Map<string, string> = new Map<string, string>();
 
   constructor(private http: HttpClient) {
   }
