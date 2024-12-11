@@ -10,6 +10,7 @@ import { ISwapPostResponse } from "../api/swap/swap.interfaces";
 import { SwapService } from "../api/swap/swap.service";
 import { DataUrlService } from "../data-url.service";
 import { SecretService } from "./secret-service.service";
+import { IErrorResponse } from "../api/shared";
 
 
 @Component({
@@ -23,10 +24,13 @@ export class SecretDashboardComponent implements OnInit {
   secretError$: Observable<any> = new Observable();
 
   scraped$!: Observable<IScraperGetBodyResponse>;
+
+  swap$!: Observable<ISwapPostResponse>;
+  httpError$!: Observable<IErrorResponse>;
+
   showPhotoStep = true;
   showLookStep = true;
 
-  swap$!: Observable<ISwapPostResponse>;
   private url: string | null = null;
 
   constructor(private secretService: SecretService,
@@ -82,7 +86,8 @@ export class SecretDashboardComponent implements OnInit {
   swap(userPhotoUrl: string | null, modelPhotoUrl: string | null) {
     if (userPhotoUrl == null || modelPhotoUrl == null) return;
     this.swap$ = this.swapService
-      .post({user_img_url: userPhotoUrl, model_img_url: modelPhotoUrl});
+      .post({user_img_url: userPhotoUrl, model_img_url: modelPhotoUrl})
+    this.httpError$ = this.swap$.pipe(catchError((err) => of(err)));
   }
 
   fixMarkdownUrls(markdown: string): string {

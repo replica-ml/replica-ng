@@ -8,3 +8,9 @@ export interface IDates<T> {
 export const parseDates = <T>(obj: IDates<string> & T): T & IDates<Date> => Object.assign(obj, {
   createdAt: new Date(obj.createdAt), updatedAt: new Date(obj.updatedAt)
 });
+
+export interface IErrorResponse {
+  error: string;
+  error_description: string;
+  traceback?: string | null;
+}
